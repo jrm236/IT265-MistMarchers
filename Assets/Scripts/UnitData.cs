@@ -14,6 +14,13 @@ public enum UnitTier
     Tier3 = 3
 }
 
+public enum FactionAbility
+{
+    Regeneration,
+    InvirgoratingSpores,
+    Swarm
+}
+
 [CreateAssetMenu(fileName = "NewUnitData", menuName = "Unit Data")]
 public class UnitData : ScriptableObject
 {

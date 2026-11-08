@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class GridManager : MonoBehaviour
 {
@@ -55,5 +56,57 @@ public class GridManager : MonoBehaviour
         int y = Mathf.RoundToInt((worldPosition.y - gridOrigin.y) / cellSize);
 
         return GetCell(new Vector2Int(x, y));
+    }
+
+    public List<GridCell> GetReachableCells(GridCell startCell, int movementRange, UnitToken movingUnit)
+    {
+        List<GridCell> reachableCells = new List<GridCell>();
+        Queue<GridCell> checkCells = new Queue<GridCell>();
+
+        Dictionary<GridCell, int> distance = new Dictionary<GridCell, int>();
+        checkCells.Enqueue(startCell);
+        distance[startCell] = 0;
+
+        while (checkCells.Count > 0)
+        {
+            GridCell currentCell = checkCells.Dequeue();
+            reachableCells.Add(currentCell);
+            int currentDistance = distance[currentCell];
+
+            if (currentDistance >= movementRange)
+            {
+            continue;
+            }
+
+            Vector2Int[] directions = {Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right};
+
+            foreach (Vector2Int direction in directions)
+            {
+                Vector2Int nextPosition = currentCell.gridPosition + direction;
+
+                GridCell nextCell = GetCell(nextPosition);
+
+                if (nextCell == null)
+                {
+                    continue;
+                }
+
+                if (!nextCell.IsAvailable(movingUnit))
+                {
+                    continue;
+                }
+
+                if (distance.ContainsKey(nextCell))
+                {
+                    continue;
+                }
+
+                distance[nextCell] = currentDistance + 1;
+
+                checkCells.Enqueue(nextCell);
+            }
+        }
+
+        return reachableCells;
     }
 }

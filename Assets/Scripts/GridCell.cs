@@ -6,6 +6,20 @@ public class GridCell : MonoBehaviour
     public bool isWalkable = true;
     public UnitToken occupyingUnit;
 
+    private SpriteRenderer spriteRenderer;
+    private Color defaultColor;
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        
+        if (spriteRenderer != null)
+        {
+            defaultColor = spriteRenderer.color;
+        }
+
+    }
+
     public void Setup(Vector2Int position)
     {
         gridPosition = position;
@@ -24,5 +38,22 @@ public class GridCell : MonoBehaviour
         }
 
         return true;
+    }
+
+    public void GridHighlight(bool highlighted)
+    {
+        if (spriteRenderer == null)
+        {
+            return;
+        }
+
+        if (highlighted)
+        {
+            spriteRenderer.color = Color.green;
+        }
+        else
+        {
+            spriteRenderer.color = defaultColor;
+        }
     }
 }

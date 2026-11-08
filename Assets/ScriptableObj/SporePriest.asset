@@ -16,7 +16,7 @@ MonoBehaviour:
   faction: 0
   tier: 1
   maxHealth: 8
-  moveSpeed: 2
+  movementSpeed: 2
   armorValue: 2
   attackRange: 1
   damageDice: 4
