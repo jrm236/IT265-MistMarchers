@@ -17,7 +17,7 @@ public enum UnitTier
 public enum FactionAbility
 {
     Regeneration,
-    InvirgoratingSpores,
+    InvigoratingSpores,
     Swarm
 }
 
@@ -36,6 +36,7 @@ public class UnitData : ScriptableObject
     public int attackRange;
 
     [Header("Damage")]
+    public string damageVisual;
     public int damageDice;
     public int damageBonus;
 

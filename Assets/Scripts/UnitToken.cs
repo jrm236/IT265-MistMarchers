@@ -9,12 +9,18 @@ public class UnitToken : MonoBehaviour
     [Header("Runtime Data")]
     public int currentHealth;
 
+    [Header("Player Ownership Data")]
+    public PlayerID owner;
+
     [Header("Grid Placement Data")]
     public GridManager gridManager;
     public GridCell currentCell;
 
     [Header("Visual Placement Data")]
     public Vector3 visualOffset = new Vector3(0f, 0.2f, 0f);
+
+    [Header("Managers")]
+    public TurnManager turnManager;
 
     private Vector3 startingPosition;
     private List<GridCell> reachableCells = new List<GridCell>();
@@ -66,8 +72,20 @@ public class UnitToken : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (unitData == null || currentCell == null)
+        if (unitData == null || currentCell == null || turnManager == null)
         {
+            return;
+        }
+
+        if (!turnManager.IsPlayerTurn(owner))
+        {
+            Debug.Log("This unit doesn't belong to the current player");
+            return;
+        }
+
+        if (!turnManager.canSpendActionPoints(unitData.actionPointCost))
+        {
+            Debug.Log("Not enough action points to move this unit: " + unitData.unitName);
             return;
         }
 
@@ -109,9 +127,11 @@ public class UnitToken : MonoBehaviour
 
         GridCell targetCell = gridManager.GetCellFromWorld(transform.position - visualOffset);
 
-        if (targetCell != null && reachableCells.Contains(targetCell))
+        if (targetCell != null && reachableCells.Contains(targetCell) && targetCell != currentCell)
         {
             MoveToCell(targetCell);
+            turnManager.spendActionPoints(unitData.actionPointCost);
+            
         }
         else
         {

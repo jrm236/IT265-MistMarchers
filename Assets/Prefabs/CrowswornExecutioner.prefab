@@ -103,6 +103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitData: {fileID: 11400000, guid: 4170b593936656c4e99cc62fe7f454b4, type: 2}
   currentHealth: 0
+  owner: 1
   gridManager: {fileID: 0}
   currentCell: {fileID: 0}
   visualOffset: {x: 0, y: 0.15, z: 0}

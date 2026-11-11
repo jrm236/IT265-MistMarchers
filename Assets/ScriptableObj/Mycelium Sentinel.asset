@@ -19,6 +19,7 @@ MonoBehaviour:
   movementSpeed: 1
   armorValue: 3
   attackRange: 1
+  damageVisual: 1d4
   damageDice: 4
   damageBonus: 1
   actionPointCost: 2
