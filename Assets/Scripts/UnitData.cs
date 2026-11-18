@@ -30,6 +30,7 @@ public class UnitData : ScriptableObject
     public UnitTier tier;
 
     [Header("Stats")]
+    public int currentHealth;
     public int maxHealth;
     public int movementSpeed;
     public int armorValue;

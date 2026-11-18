@@ -14,6 +14,9 @@ public class TurnManager : MonoBehaviour
     public int turnNumber = 1;
     public int maxTurns = 20;
 
+    [Header("Managers")]
+    public UnitSelectionManager unitSelectionManager;
+
     private void Start()
     {
         startTurn();
@@ -52,6 +55,11 @@ public class TurnManager : MonoBehaviour
 
     public void EndTurn()
     {
+        if (unitSelectionManager != null)
+        {
+            unitSelectionManager.ClearSelection();
+        }
+
         if (currentPlayer == PlayerID.Player1)
         {
             currentPlayer = PlayerID.Player2;
@@ -64,4 +72,5 @@ public class TurnManager : MonoBehaviour
 
         startTurn();
     }   
+
 }

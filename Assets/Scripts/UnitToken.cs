@@ -13,7 +13,6 @@ public class UnitToken : MonoBehaviour
     public PlayerID owner;
 
     [Header("Grid Placement Data")]
-    public GridManager gridManager;
     public GridCell currentCell;
 
     [Header("Visual Placement Data")]
@@ -21,15 +20,27 @@ public class UnitToken : MonoBehaviour
 
     [Header("Managers")]
     public TurnManager turnManager;
+    public GridManager gridManager;
+    public UnitSelectionManager unitSelectionManager;
+
+    [Header("Unit Activation Data")]
+    public bool activationStarted = false;
+    public bool hasMovedThisActivation = false;
+    public bool hasAttackedThisActivation = false;
 
     private Vector3 startingPosition;
     private List<GridCell> reachableCells = new List<GridCell>();
     private Camera mainCamera;
     private bool isDragging = false;
+    private bool movementEnabled = false;
+
+    private SpriteRenderer spriteRenderer;
+    private Color normalColor;
 
     private void Start()
     {
         mainCamera = Camera.main;
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (unitData == null) 
         {
@@ -41,6 +52,11 @@ public class UnitToken : MonoBehaviour
         {
             Debug.LogWarning(gameObject.name + " has no GridManager assigned.");
             return;
+        }
+
+        if (spriteRenderer != null)
+        {
+            normalColor = spriteRenderer.color;
         }
         
         currentHealth = unitData.maxHealth;
@@ -72,47 +88,60 @@ public class UnitToken : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (unitData == null || currentCell == null || turnManager == null)
+        if (unitSelectionManager == null)
         {
             return;
         }
 
-        if (!turnManager.IsPlayerTurn(owner))
+        if (movementEnabled)
         {
-            Debug.Log("This unit doesn't belong to the current player");
-            return;
-        }
-
-        if (!turnManager.canSpendActionPoints(unitData.actionPointCost))
-        {
-            Debug.Log("Not enough action points to move this unit: " + unitData.unitName);
-            return;
-        }
-
-        isDragging = true;
-
-        startingPosition = transform.position;
-        reachableCells = gridManager.GetReachableCells(currentCell, unitData.movementSpeed, this);
-    
-        foreach (GridCell cell in reachableCells)
-        {
-            if (cell != currentCell)
+            if (unitSelectionManager.selectedUnit != this)
             {
-                cell.GridHighlight(true);
+                return;
             }
+
+            isDragging = true;
+            startingPosition = transform.position;
+
+            return;
         }
+
+        unitSelectionManager.SelectUnit(this);
     }
 
     private void OnMouseDrag()
     {
+        if (!movementEnabled)
+        {
+            return;
+        }
+
+        if (unitSelectionManager == null)
+        {
+            Debug.LogError(gameObject.name + " has no UnitSelectionManager assigned.");
+            return;
+        }
+
+        if (unitSelectionManager.selectedUnit != this)
+        {
+            return;
+        }
+
         if (!isDragging)
         {
             return;
         }
 
-        Vector3 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        if (mainCamera == null)
+        {
+            return;
+        }
+
+        Vector3 mousePosition =
+            mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
         mousePosition.z = 0;
+
         transform.position = mousePosition;
     }
 
@@ -129,15 +158,39 @@ public class UnitToken : MonoBehaviour
 
         if (targetCell != null && reachableCells.Contains(targetCell) && targetCell != currentCell)
         {
+            if (!activationStarted)
+            {
+                bool activationConfirmed = unitSelectionManager.ConfirmActivation(this);
+
+                if (!activationConfirmed)
+                {
+                    transform.position = startingPosition;
+
+                    return;
+                }
+            }
+
             MoveToCell(targetCell);
-            turnManager.spendActionPoints(unitData.actionPointCost);
-            
+
+            hasMovedThisActivation = true;
+            unitSelectionManager.RefreshUnitUI();
         }
         else
         {
             transform.position = startingPosition;
         }
 
+        ClearMovementHighlights();
+        movementEnabled = false;
+
+        if (unitSelectionManager != null)
+        {
+            unitSelectionManager.currentUnitState = UnitState.UnitSelected;
+        }
+    }
+
+    private void ClearMovementHighlights()
+    {
         foreach (GridCell cell in reachableCells)
         {
             cell.GridHighlight(false);
@@ -159,5 +212,72 @@ public class UnitToken : MonoBehaviour
         transform.position = currentCell.transform.position + visualOffset;
 
         Debug.Log("Grid Position: " + currentCell.gridPosition);
+    }
+
+    public void SetSelected(bool selected)
+    {
+        if (spriteRenderer == null)
+        {
+            return;
+        }
+
+        if (selected)
+        {
+            spriteRenderer.color = Color.yellow;
+        }
+        else
+        {
+            spriteRenderer.color = normalColor;
+        }
+    }
+
+    public void BeginUnitMovement()
+    {
+        if (unitData == null || currentCell == null || turnManager == null)
+        {
+            return;
+        }
+
+        movementEnabled = true;
+
+        reachableCells = gridManager.GetReachableCells(currentCell, unitData.movementSpeed, this);
+    
+        foreach (GridCell cell in reachableCells)
+        {
+            if (cell != currentCell)
+            {
+                cell.GridHighlight(true);
+            }
+        }
+    }
+
+    public void CancelUnitMovement()
+    {
+        ClearMovementHighlights();
+        movementEnabled = false;
+        isDragging = false;
+
+        if (currentCell != null)
+        {
+            transform.position = currentCell.transform.position + visualOffset;
+        }
+    }
+
+    public void StartActivation()
+    {
+        activationStarted = true;
+
+        Debug.Log("Unit Activation Started: " + unitData.unitName);
+    }
+
+    public void EndActivation()
+    {
+        activationStarted = false;
+        hasMovedThisActivation = false;
+        hasAttackedThisActivation = false;
+
+        CancelUnitMovement();
+
+        Debug.Log("Unit Activation Ended: " + unitData.unitName);
     }
 }
