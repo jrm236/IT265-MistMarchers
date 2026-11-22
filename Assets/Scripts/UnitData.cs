@@ -29,6 +29,9 @@ public class UnitData : ScriptableObject
     public UnitFaction faction;
     public UnitTier tier;
 
+    [Header("Visuals")]
+    public Sprite unitPortrait;
+
     [Header("Stats")]
     public int currentHealth;
     public int maxHealth;
@@ -43,4 +46,10 @@ public class UnitData : ScriptableObject
 
     [Header("AP Cost")]
     public int actionPointCost = 1;
+
+    [Header("Abilities")]
+    public string passiveName;
+    
+    [TextArea]
+    public string passiveDescription;
 }

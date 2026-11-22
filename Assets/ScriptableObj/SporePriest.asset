@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b52348201ae84346b04cbaa849efa15, type: 3}
   m_Name: SporePriest
   m_EditorClassIdentifier: 
-  unitName: SporePriest
+  unitName: Spore Priest
   faction: 0
   tier: 1
+  unitPortrait: {fileID: 703773129046759172, guid: bfcc56cda58742a4e91f22808c8e5391, type: 3}
+  currentHealth: 0
   maxHealth: 8
   movementSpeed: 2
   armorValue: 2
@@ -23,3 +25,6 @@ MonoBehaviour:
   damageDice: 4
   damageBonus: 0
   actionPointCost: 1
+  passiveName: Sermon Of Renewal
+  passiveDescription: When an adjacent allied unit is healed, it heals 1 additional
+    hp.

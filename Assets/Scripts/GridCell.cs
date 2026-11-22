@@ -40,20 +40,23 @@ public class GridCell : MonoBehaviour
         return true;
     }
 
-    public void GridHighlight(bool highlighted)
+    public void GridHighlight(Color highlighted)
     {
         if (spriteRenderer == null)
         {
             return;
         }
 
-        if (highlighted)
+        spriteRenderer.color = highlighted;
+    }
+
+    public void ClearHighlight()
+    {
+        if (spriteRenderer == null)
         {
-            spriteRenderer.color = Color.green;
+            return;
         }
-        else
-        {
-            spriteRenderer.color = defaultColor;
-        }
+
+        spriteRenderer.color = defaultColor;
     }
 }

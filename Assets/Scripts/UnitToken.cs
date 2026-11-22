@@ -30,9 +30,11 @@ public class UnitToken : MonoBehaviour
 
     private Vector3 startingPosition;
     private List<GridCell> reachableCells = new List<GridCell>();
+    private List<GridCell> attackableCells = new List<GridCell>();
     private Camera mainCamera;
     private bool isDragging = false;
     private bool movementEnabled = false;
+    private bool attackEnabled = false;
 
     private SpriteRenderer spriteRenderer;
     private Color normalColor;
@@ -93,6 +95,8 @@ public class UnitToken : MonoBehaviour
             return;
         }
 
+        UnitToken attacker = unitSelectionManager.selectedUnit;
+
         if (movementEnabled)
         {
             if (unitSelectionManager.selectedUnit != this)
@@ -103,10 +107,22 @@ public class UnitToken : MonoBehaviour
             isDragging = true;
             startingPosition = transform.position;
 
+            if (attackEnabled)
+            {
+                CancelUnitAttack();
+            }
+
             return;
         }
 
+        if (attacker != null && unitSelectionManager.currentUnitState == UnitState.UnitAttacking)
+        {
+            attacker.TryAttack(this);
+            return;
+        }  
+
         unitSelectionManager.SelectUnit(this);
+
     }
 
     private void OnMouseDrag()
@@ -193,7 +209,7 @@ public class UnitToken : MonoBehaviour
     {
         foreach (GridCell cell in reachableCells)
         {
-            cell.GridHighlight(false);
+            cell.ClearHighlight();
         }
 
         reachableCells.Clear();
@@ -246,7 +262,7 @@ public class UnitToken : MonoBehaviour
         {
             if (cell != currentCell)
             {
-                cell.GridHighlight(true);
+                cell.GridHighlight(Color.green);
             }
         }
     }
@@ -277,7 +293,141 @@ public class UnitToken : MonoBehaviour
         hasAttackedThisActivation = false;
 
         CancelUnitMovement();
+        CancelUnitAttack();
 
         Debug.Log("Unit Activation Ended: " + unitData.unitName);
+    }
+
+    public void BeginUnitAttack()
+    {
+        if (unitData == null || currentCell == null)
+        {
+            return;
+        }
+
+        attackEnabled = true;
+        attackableCells = gridManager.GetAttackableCells(currentCell, unitData.attackRange);
+
+        foreach (GridCell cell in attackableCells)
+        {
+            cell.GridHighlight(new Color(1f, 0.55f, 0.25f));
+        }
+
+        if (movementEnabled)
+        {
+            CancelUnitMovement();
+        }
+    }
+
+    public void CancelUnitAttack()
+    {
+        foreach (GridCell cell in attackableCells)
+        {
+            cell.ClearHighlight();
+        }
+
+        attackableCells.Clear();
+        attackEnabled = false;
+    }
+
+    public void TryAttack(UnitToken targetUnit)
+    {
+        if (targetUnit == null)
+        {
+            return;
+        }
+
+        if (!attackEnabled)
+        {
+            return;
+        }
+
+        if (targetUnit.owner == owner)
+        {
+            Debug.Log("Cannot attack ally unit.");
+            return;
+        }
+
+        if (!attackableCells.Contains(targetUnit.currentCell))
+        {
+            Debug.Log("Target unit is out of targetable range.");
+            return;
+        }
+
+        if (!activationStarted)
+        {
+            bool activationConfirmed =  unitSelectionManager.ConfirmActivation(this);
+
+            if (!activationConfirmed)
+            {
+                return;
+            }
+        }
+
+        ResolveAttack(targetUnit);
+    }
+
+    private void ResolveAttack(UnitToken targetUnit)
+    {
+        int accuracyRoll = Random.Range(1,7);
+
+        Debug.Log(unitData.unitName + " attacks " + targetUnit.unitData.unitName + " with a roll of " + accuracyRoll);
+        
+        if (accuracyRoll <= targetUnit.unitData.armorValue)
+        {
+            Debug.Log(unitData.unitName + " misses " + targetUnit.unitData.unitName);
+            FinishAttack();
+
+            return;
+        }
+
+        int damageRoll = Random.Range(1, unitData.damageDice + 1);
+        int totalDamage = damageRoll + unitData.damageBonus;
+
+        targetUnit.TakeDamage(totalDamage);
+        hasAttackedThisActivation = true;
+        FinishAttack();
+    }
+
+    private void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+        }
+
+        Debug.Log(unitData.unitName + " takes " + damage + " damage.");
+
+        if (currentHealth <= 0)
+        {
+            DefeatUnit();
+        }
+    }
+
+    private void FinishAttack()
+    {
+        CancelUnitAttack();
+        hasAttackedThisActivation = true;
+        EndActivation();
+
+        if (unitSelectionManager != null)
+        {
+            unitSelectionManager.currentUnitState = UnitState.UnitSelected;
+            unitSelectionManager.RefreshUnitUI();
+        }
+    }
+
+    private void DefeatUnit()
+    {
+        if (currentCell != null)
+        {
+            currentCell.occupyingUnit = null;
+        }
+
+        Debug.Log(unitData.unitName + " was defeated.");
+
+        gameObject.SetActive(false);
     }
 }

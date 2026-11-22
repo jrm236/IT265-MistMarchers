@@ -109,4 +109,26 @@ public class GridManager : MonoBehaviour
 
         return reachableCells;
     }
+
+    public List<GridCell> GetAttackableCells(GridCell startCell, int attackRange)
+    {
+        List<GridCell> attackCells = new List<GridCell>();
+
+        for (int x = 0; x < gridWidth; x++)
+        {
+            for (int y = 0; y < gridHeight; y++)
+            {
+                GridCell cell = cells[x,y];
+                
+                int distance = Mathf.Abs(cell.gridPosition.x - startCell.gridPosition.x) + Mathf.Abs(cell.gridPosition.y - startCell.gridPosition.y);
+
+                if (distance > 0 && distance <= attackRange)
+                {
+                    attackCells.Add(cell);
+                }
+            }
+        }
+
+        return attackCells;
+    }
 }

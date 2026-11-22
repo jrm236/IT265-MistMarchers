@@ -15,6 +15,8 @@ MonoBehaviour:
   unitName: Paladin of Mushrooms
   faction: 0
   tier: 3
+  unitPortrait: {fileID: 6830740562461041563, guid: bfcc56cda58742a4e91f22808c8e5391, type: 3}
+  currentHealth: 0
   maxHealth: 13
   movementSpeed: 2
   armorValue: 2
@@ -23,3 +25,6 @@ MonoBehaviour:
   damageDice: 6
   damageBonus: 0
   actionPointCost: 3
+  passiveName: Regeneration
+  passiveDescription: Spend a faction point to heal a selected owned unit by 1d4.
+    Additionally, reduce the next damage taken by 1.

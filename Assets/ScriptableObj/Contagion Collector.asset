@@ -15,6 +15,8 @@ MonoBehaviour:
   unitName: Contagion Collector
   faction: 2
   tier: 2
+  unitPortrait: {fileID: 8593175075690583541, guid: bfcc56cda58742a4e91f22808c8e5391, type: 3}
+  currentHealth: 0
   maxHealth: 8
   movementSpeed: 3
   armorValue: 2
@@ -23,3 +25,5 @@ MonoBehaviour:
   damageDice: 4
   damageBonus: 1
   actionPointCost: 2
+  passiveName: Careful Aim
+  passiveDescription: If this unit does not move before attacking, gain +1 to hit.

@@ -37,6 +37,11 @@ public class UnitSelectionManager : MonoBehaviour
             {
                 selectedUnit.EndActivation();
             }
+            else
+            {
+                selectedUnit.CancelUnitMovement();
+                selectedUnit.CancelUnitAttack();
+            }
 
             selectedUnit.SetSelected(false);
         }
@@ -61,8 +66,14 @@ public class UnitSelectionManager : MonoBehaviour
             {
                 selectedUnit.EndActivation();
             }
+            else
+            {
+                selectedUnit.CancelUnitMovement();
+                selectedUnit.CancelUnitAttack();
+            }
 
             selectedUnit.SetSelected(false);
+
         }
 
         if (unitActionUI != null)

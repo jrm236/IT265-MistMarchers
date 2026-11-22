@@ -15,6 +15,8 @@ MonoBehaviour:
   unitName: Mycelium Sentinel
   faction: 0
   tier: 2
+  unitPortrait: {fileID: 3521636946835726007, guid: bfcc56cda58742a4e91f22808c8e5391, type: 3}
+  currentHealth: 0
   maxHealth: 12
   movementSpeed: 1
   armorValue: 3
@@ -23,3 +25,6 @@ MonoBehaviour:
   damageDice: 4
   damageBonus: 1
   actionPointCost: 2
+  passiveName: Hold Position
+  passiveDescription: If this unit ends it's turn adjacent to any terrain piece,
+    reduce the damage of the next damage taken by 1.

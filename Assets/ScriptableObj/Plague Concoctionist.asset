@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b52348201ae84346b04cbaa849efa15, type: 3}
   m_Name: Plague Concoctionist
   m_EditorClassIdentifier: 
-  unitName: PlagueConcoctionist
+  unitName: Plague Concoctionist
   faction: 2
   tier: 1
+  unitPortrait: {fileID: 8103368500994899187, guid: bfcc56cda58742a4e91f22808c8e5391, type: 3}
+  currentHealth: 0
   maxHealth: 7
   movementSpeed: 2
   armorValue: 2
@@ -23,3 +25,5 @@ MonoBehaviour:
   damageDice: 4
   damageBonus: 0
   actionPointCost: 1
+  passiveName: Experimental Antidote
+  passiveDescription: Damage taken from a single attack cannot exceed 4.
