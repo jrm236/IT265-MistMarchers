@@ -25,7 +25,7 @@ MonoBehaviour:
   damageDice: 8
   damageBonus: 1
   actionPointCost: 3
-  passiveName: Invigorating Fumes
+  passiveName: ~Invigorating Fumes~
   passiveDescription: 'Spend a faction point on any owned unit or opposing unit adjacent
     to a unit you own. Flip a coin: -Heads: Ally gains +2 to damage on it''s next
     attack; Enemy deals -1 damage on it''s next attack. -Tails: Ally heals 2 hp;

@@ -27,4 +27,4 @@ MonoBehaviour:
   actionPointCost: 2
   passiveName: Hold Position
   passiveDescription: If this unit ends it's turn adjacent to any terrain piece,
-    reduce the damage of the next damage taken by 1.
+    reduce the next damage taken by 1.

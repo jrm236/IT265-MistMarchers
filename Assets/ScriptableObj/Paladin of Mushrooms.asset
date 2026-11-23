@@ -25,6 +25,6 @@ MonoBehaviour:
   damageDice: 6
   damageBonus: 0
   actionPointCost: 3
-  passiveName: Regeneration
+  passiveName: ~Regeneration~
   passiveDescription: Spend a faction point to heal a selected owned unit by 1d4.
     Additionally, reduce the next damage taken by 1.

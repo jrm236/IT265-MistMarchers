@@ -106,6 +106,7 @@ public class UnitToken : MonoBehaviour
 
             isDragging = true;
             startingPosition = transform.position;
+            CursorManager.instance.SetHoldingUnitCursor();
 
             if (attackEnabled)
             {
@@ -169,6 +170,7 @@ public class UnitToken : MonoBehaviour
         }
 
         isDragging = false;
+        CursorManager.instance.SetNormalCursor();
 
         GridCell targetCell = gridManager.GetCellFromWorld(transform.position - visualOffset);
 
@@ -202,6 +204,48 @@ public class UnitToken : MonoBehaviour
         if (unitSelectionManager != null)
         {
             unitSelectionManager.currentUnitState = UnitState.UnitSelected;
+        }
+    }
+
+    private void OnMouseEnter()
+    {
+        if (CursorManager.instance == null)
+        {
+            return;
+        }
+
+        UnitToken attacker = unitSelectionManager.selectedUnit;
+
+        if (attacker != null && unitSelectionManager.currentUnitState == UnitState.UnitAttacking)
+        {
+            if (attacker.CanAttackUnit(this))
+            {
+                CursorManager.instance.SetAttackCursor();
+            }
+            else
+            {
+                CursorManager.instance.SetNormalCursor();
+            }
+
+            return;
+        }
+
+        if (turnManager.IsPlayerTurn(owner))
+        {
+            CursorManager.instance.SetHoverGrabbableCursor();
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        if (CursorManager.instance == null)
+        {
+            return;
+        }
+
+        if (!isDragging)
+        {
+            CursorManager.instance.SetNormalCursor();
         }
     }
 
@@ -277,6 +321,11 @@ public class UnitToken : MonoBehaviour
         {
             transform.position = currentCell.transform.position + visualOffset;
         }
+
+        if (CursorManager.instance != null)
+        {
+            CursorManager.instance.SetNormalCursor();
+        }
     }
 
     public void StartActivation()
@@ -330,27 +379,36 @@ public class UnitToken : MonoBehaviour
         attackEnabled = false;
     }
 
-    public void TryAttack(UnitToken targetUnit)
+    public bool CanAttackUnit(UnitToken targetUnit)
     {
         if (targetUnit == null)
         {
-            return;
+            return false;
         }
 
         if (!attackEnabled)
         {
-            return;
+            return false;
         }
 
         if (targetUnit.owner == owner)
         {
-            Debug.Log("Cannot attack ally unit.");
-            return;
+            return false;
         }
 
         if (!attackableCells.Contains(targetUnit.currentCell))
         {
-            Debug.Log("Target unit is out of targetable range.");
+            return false;
+        }
+
+        return true;
+    }
+
+    public void TryAttack(UnitToken targetUnit)
+    {
+
+        if (!CanAttackUnit(targetUnit))
+        {
             return;
         }
 
